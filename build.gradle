@@ -11,13 +11,6 @@ plugins {
 
 version = '1.0'
 
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'CICD Demo',
-                'Implementation-Version': version
-    }
-}
-
 repositories {
     mavenCentral()
 }
@@ -55,7 +48,7 @@ processResources {
 
 // Configure task  'bootJar'
 bootJar {
-    mainClassName = "com.example.ExampleApplication"
+    mainClassName = "com.jcore.cicd.helloworld.HelloworldApplication"
 }
 
 // Configure task  'checkstyle'
