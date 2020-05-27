@@ -1,0 +1,101 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'checkstyle'
+
+    id 'org.springframework.boot' version '2.3.0.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'com.moowork.node' version '1.3.1'
+    id 'com.github.spotbugs' version '4.2.3'
+}
+
+version = '1.0'
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'CICD Demo',
+                'Implementation-Version': version
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    lombokVersion = "1.18.12"
+    junitVersion = "5.3.1"
+
+    frontendDir = "$projectDir/src/main/webapp"
+}
+
+dependencies {
+    // Application dependencies
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    compileOnly "org.projectlombok:lombok:$lombokVersion"
+    annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+
+    // Test dependencies
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude group: "org.junit.vintage"
+    }
+    testCompileOnly "org.projectlombok:lombok:$lombokVersion"
+    testAnnotationProcessor "org.projectlombok:lombok:$lombokVersion"
+}
+
+// Configure task  'processResources'
+test {
+    useJUnitPlatform()
+}
+
+// Configure task  'processResources'
+processResources {
+    dependsOn "frontendCopy"
+}
+
+// Configure task  'bootJar'
+bootJar {
+    mainClassName = "com.example.ExampleApplication"
+}
+
+// Configure task  'checkstyle'
+checkstyle {
+    configFile file("checkstyle.xml")
+    toolVersion '8.32'
+}
+
+// Create a new task names `buildAngular`
+task buildAngular(type: NpmTask) {
+    dependsOn "installAngular"
+
+    // Set input and output so Gradle can
+    // determine if task is up-to-date.
+    inputs.dir "${frontendDir}/e2e"
+    inputs.dir "${frontendDir}/src"
+    inputs.dir "${frontendDir}/node_modules"
+    outputs.dir "${frontendDir}/dist"
+
+    args = ['run-script', 'build']
+    execOverrides {
+        it.workingDir "$frontendDir"
+    }
+}
+
+// Create a new task names `installAngular`
+task installAngular(type: NpmTask) {
+    // Set input and output so Gradle can
+    // determine if task is up-to-date.
+    inputs.file "${frontendDir}/package.json"
+    outputs.dir "${frontendDir}/node_modules"
+
+    args = ['install']
+    execOverrides {
+        it.workingDir "$frontendDir"
+    }
+}
+
+// Create a new task names `installAngular`
+task frontendCopy(type: Copy) {
+    from buildAngular
+    into "${sourceSets.main.output.resourcesDir}/static"
+}
