@@ -36,15 +36,6 @@ dependencies {
 }
 
 tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Implementation-Title" to "CICD Demo",
-                    "Implementation-Version" to "${project.version}"
-            ))
-        }
-    }
-
     // Configure task  'processResources'
     test {
         useJUnitPlatform()
@@ -57,7 +48,7 @@ tasks {
 
     // Configure task  'bootJar'
     bootJar {
-        mainClassName = "com.example.ExampleApplication"
+        mainClassName = "com.jcore.cicd.helloworld.HelloworldApplication"
     }
 
     // Configure task  'checkstyle'
