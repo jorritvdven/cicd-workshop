@@ -1,14 +1,13 @@
-import com.moowork.gradle.node.npm.NpmTask
+import com.github.gradle.node.npm.task.NpmTask
 
 plugins {
     java
     idea
     checkstyle
-
-    id("org.springframework.boot") version "2.3.0.RELEASE"
-    id("io.spring.dependency-management") version "1.0.9.RELEASE"
-    id("com.moowork.node") version "1.3.1"
-    id("com.github.spotbugs") version "4.2.3"
+    id("org.springframework.boot") version "3.2.1"
+    id("io.spring.dependency-management") version "1.1.4"
+    id("com.github.node-gradle.node") version "7.0.1"
+    id("com.github.spotbugs") version "6.0.6"
 }
 
 version = "1.0"
@@ -17,8 +16,8 @@ repositories {
     mavenCentral()
 }
 
-val lombokVersion = "1.18.12"
-val junitVersion = "5.3.1"
+val lombokVersion = "1.18.30"
+val junitVersion = "5.10.1"
 val frontendDir = "$projectDir/src/main/webapp"
 
 dependencies {
@@ -48,7 +47,7 @@ tasks {
 
     // Configure task  'bootJar'
     bootJar {
-        mainClassName = "com.jcore.cicd.helloworld.HelloworldApplication"
+        mainClass = "com.jcore.cicd.helloworld.HelloworldApplication"
     }
 
     // Configure task  'checkstyle'
@@ -57,31 +56,23 @@ tasks {
         toolVersion = "8.32"
     }
 
-    // Create a new task named `buildAngular`
-    val buildAngular = register<NpmTask>("buildAngular") {
-        dependsOn("installAngular")
-
-        // Set input and output so Gradle can
-        // determine if task is up-to-date.
-        inputs.dir("${frontendDir}/e2e")
-        inputs.dir("${frontendDir}/src")
-        inputs.dir("${frontendDir}/node_modules")
-        outputs.dir("${frontendDir}/dist")
-
-        setArgs(listOf("run-script", "build"))
-
-        setWorkingDir(frontendDir)
+    node {
+        download = true
+        nodeProjectDir = file(frontendDir)
     }
 
     // Create a new task named `buildAngular`
-    register<NpmTask>("installAngular") {
+    val buildAngular = register<NpmTask>("buildAngular") {
+        dependsOn("npmInstall")
+
         // Set input and output so Gradle can
         // determine if task is up-to-date.
-        inputs.file("${frontendDir}/package.json")
-        outputs.dir("${frontendDir}/node_modules")
+        inputs.dir("${frontendDir}/src")
+        inputs.dir("${frontendDir}/node_modules")
 
-        setArgs(listOf("install"))
-        setWorkingDir(frontendDir)
+        outputs.dir("${frontendDir}/dist")
+
+        args = listOf("run-script", "build")
     }
 
     // Create a new task names `frontendCopy`
