@@ -4,6 +4,7 @@ plugins {
     java
     idea
     checkstyle
+    id("io.freefair.lombok") version "8.4"
     id("org.springframework.boot") version "3.2.1"
     id("io.spring.dependency-management") version "1.1.4"
     id("com.github.node-gradle.node") version "7.0.1"
@@ -24,14 +25,11 @@ dependencies {
     // Application dependencies
     implementation("org.springframework.boot:spring-boot-starter-web")
     compileOnly("org.projectlombok:lombok:$lombokVersion")
-    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
     // Test dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage")
     }
-    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
-    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 }
 
 tasks {
@@ -42,7 +40,7 @@ tasks {
 
     // Configure task  'processResources'
     processResources {
-        dependsOn("frontendCopy")
+//        dependsOn("frontendCopy")
     }
 
     // Configure task  'bootJar'
@@ -53,7 +51,7 @@ tasks {
     // Configure task  'checkstyle'
     checkstyle {
         configFile = File("checkstyle.xml")
-        toolVersion = "8.32"
+        toolVersion = "8.24"
     }
 
     node {
