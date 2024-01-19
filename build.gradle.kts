@@ -40,7 +40,7 @@ tasks {
 
     // Configure task  'processResources'
     processResources {
-//        dependsOn("frontendCopy")
+        dependsOn("frontendCopy")
     }
 
     // Configure task  'bootJar'
@@ -51,11 +51,12 @@ tasks {
     // Configure task  'checkstyle'
     checkstyle {
         configFile = File("checkstyle.xml")
-        toolVersion = "8.24"
+        toolVersion = "9.3"
     }
 
     node {
         download = true
+        version = "20.11.0"
         nodeProjectDir = file(frontendDir)
     }
 
